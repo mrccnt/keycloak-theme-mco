@@ -1,0 +1,17 @@
+// Bootstrap Icons as CSS masks: only the icons from the ICONS list in the Makefile
+@import "icons"; // generated: $theme-icons
+
+.bi {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  vertical-align: -.125em;
+  background-color: currentColor;
+  -webkit-mask: var(--bi-icon) no-repeat center / contain;
+  mask: var(--bi-icon) no-repeat center / contain;
+}
+
+@each $icon in $theme-icons {
+  .bi-#{$icon} { --bi-icon: url("../img/icons/#{$icon}.svg"); }
+}

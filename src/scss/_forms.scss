@@ -1,0 +1,124 @@
+// Forms – input fields styled like the profile page
+
+.kc-form-group {
+  margin-bottom: .75rem;
+}
+
+.form-label {
+  margin-bottom: .15rem;
+}
+
+.form-control {
+  font-size: .875rem;
+}
+
+select.form-control {
+  @extend .form-select;
+  font-size: .875rem;
+}
+
+textarea.form-control {
+  min-height: 8rem;
+}
+
+.form-control[aria-invalid="true"] {
+  border-color: $kc-danger;
+
+  &:focus {
+    box-shadow: 0 0 0 .2rem rgba($kc-danger, .2);
+  }
+}
+
+.kc-input-error {
+  display: block;
+  margin-top: .3rem;
+  color: $kc-danger;
+  font-size: .875rem;
+  font-weight: $font-weight-normal;
+}
+
+.kc-helper-text-before {
+  margin: 0 0 .25rem;
+}
+
+.required {
+  color: $kc-accent;
+}
+
+.kc-form-group-header {
+  margin: 1.25rem 0 .25rem;
+  color: $kc-ink;
+  font-size: 1.125rem;
+  text-transform: uppercase;
+}
+
+// Show/hide password
+.input-group > .kc-password-toggle {
+  padding: 0 .75rem;
+  border: $input-border-width solid $input-border-color;
+  border-left: 0;
+  border-radius: 0 $border-radius $border-radius 0;
+  background: #fff;
+  color: $kc-muted;
+  letter-spacing: 0;
+
+  &:hover,
+  &:focus-visible {
+    color: $kc-accent;
+  }
+}
+
+// "Remember me" (base template uses .checkbox without its own classes)
+.checkbox,
+.form-check {
+  margin-bottom: .25rem;
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+  }
+}
+
+.checkbox input[type="checkbox"] {
+  @extend .form-check-input;
+  margin: 0;
+}
+
+// Options row (remember me / forgot password)
+.kc-form-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  margin-top: .25rem;
+  font-size: .95rem;
+
+  .checkbox { margin: 0; }
+
+  a {
+    color: $kc-muted;
+
+    &:hover { color: $kc-accent; }
+  }
+}
+
+.kc-form-options-wrapper:empty {
+  display: none;
+}
+
+#kc-form-buttons,
+.kc-form-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem;
+  margin-top: 1.25rem;
+}
+
+.kc-form-buttons-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem;
+}

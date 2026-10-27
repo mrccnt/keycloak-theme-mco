@@ -1,0 +1,19 @@
+# Local test environment: `make dev`, then http://localhost:8080/realms/master/account
+# (admin: admin / admin). Theme caching is disabled, so template/CSS changes under
+# build/theme are visible immediately after `make theme` or `make watch`.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KC_VERSION:-26.1.4}
+    command:
+      - start-dev
+      - --spi-theme-static-max-age=-1
+      - --spi-theme-cache-themes=false
+      - --spi-theme-cache-templates=false
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_SPI_THEME_WELCOME_THEME: keycloak
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build/theme/kc-auth:/opt/keycloak/themes/kc-auth:ro

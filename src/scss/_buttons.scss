@@ -1,0 +1,27 @@
+// Primary: dark with white text · Secondary: light with dark border and dark text
+
+.btn {
+  padding-right: calc(#{$btn-padding-x} - .3em); // compensate letter-spacing of the last character
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  @include button-variant(
+    $kc-dark, $kc-dark,
+    $color: #fff,
+    $hover-background: $kc-ink, $hover-border: $kc-ink, $hover-color: #fff,
+    $active-background: $kc-ink, $active-border: $kc-ink, $active-color: #fff,
+    $disabled-background: $kc-muted, $disabled-border: $kc-muted, $disabled-color: #fff
+  );
+}
+
+.btn-secondary {
+  @include button-variant(
+    #fff, $kc-dark,
+    $color: $kc-dark,
+    $hover-background: $kc-light, $hover-border: $kc-dark, $hover-color: $kc-dark,
+    $active-background: $kc-light, $active-border: $kc-dark, $active-color: $kc-dark,
+    $disabled-background: #fff, $disabled-border: $kc-muted, $disabled-color: $kc-muted
+  );
+}

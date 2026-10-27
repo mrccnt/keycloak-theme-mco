@@ -1,0 +1,267 @@
+// Page skeleton: navbar, content (image + form), footer
+
+.kc-login {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+// --- Navbar -----------------------------------------------------------------
+.kc-navbar {
+  background: $kc-surface;
+  border-top: 1px solid $kc-light;
+}
+
+.kc-navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.625rem;
+  padding: .5rem 1rem .5rem .5rem;
+
+  @include media-breakpoint-up(md) {
+    padding-right: 1.5rem;
+  }
+}
+
+.kc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-width: 0;
+  color: #fff;
+
+  &:hover { color: #fff; }
+}
+
+.kc-brand__logo {
+  width: 2rem;
+  height: 2rem;
+}
+
+.kc-brand__name {
+  overflow: hidden;
+  padding: .3rem .25rem .3rem .55rem; // less on the right: letter-spacing of the last character
+  background: $kc-dark;
+  font-size: .75rem;
+  font-weight: $font-weight-bold;
+  line-height: 1.5;
+  letter-spacing: .3em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  // displayNameHtml may contain markup – keep it from breaking the layout
+  * {
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+  }
+}
+
+.kc-nav {
+  display: none;
+
+  @include media-breakpoint-up(md) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.kc-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .25rem 0;
+  border: 0;
+  background: none;
+  color: $kc-dark;
+  font-size: .8125rem;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+
+  &:hover,
+  &[aria-expanded="true"] {
+    color: $kc-accent;
+  }
+}
+
+.kc-nav-mobile {
+  @include media-breakpoint-up(md) {
+    display: none;
+  }
+}
+
+.kc-nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .3rem .7rem;
+  border: 1px solid rgba($kc-dark, .15);
+  border-radius: $border-radius;
+  background: transparent;
+  color: $kc-muted;
+  font-size: 1.6rem;
+  line-height: 1;
+
+  &:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 .2rem rgba($kc-accent, .35);
+  }
+}
+
+// --- Dropdown (driven by base/js/menu-button-links.js) -----------------------
+.kc-locale,
+.kc-locale__wrapper,
+.kc-dropdown {
+  position: relative;
+}
+
+.kc-dropdown__caret {
+  font-size: .7em;
+  transition: transform .15s ease-in-out;
+
+  [aria-expanded="true"] > & {
+    transform: rotate(180deg);
+  }
+}
+
+.kc-dropdown__menu {
+  display: none; // menu-button-links.js sets display: block
+  position: absolute;
+  top: calc(100% + .5rem);
+  right: 0;
+  z-index: 1000;
+  min-width: 12rem;
+  max-height: 70vh;
+  margin: 0;
+  padding: .35rem 0;
+  overflow-y: auto;
+  list-style: none;
+  background: #fff;
+  border: 1px solid $kc-light;
+  border-radius: $border-radius;
+  box-shadow: 0 .5rem 1.5rem rgba($kc-ink, .12);
+}
+
+.kc-dropdown__link {
+  display: block;
+  padding: .4rem 1rem;
+  color: $kc-dark;
+  font-weight: $font-weight-normal;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus {
+    outline: 0;
+    background: $kc-surface;
+    color: $kc-accent;
+  }
+
+  &.is-active {
+    color: $kc-accent;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// --- Content ----------------------------------------------------------------
+.kc-main {
+  flex: 1 0 auto;
+  padding: 2.5rem 0 3rem;
+
+  @include media-breakpoint-up(lg) {
+    padding: 4.5rem 0;
+  }
+}
+
+.kc-layout {
+  @include make-row();
+  align-items: center;
+  justify-content: center;
+}
+
+.kc-hero {
+  @include make-col-ready();
+  margin-bottom: 2rem;
+
+  img {
+    display: block;
+    width: 100%;
+    max-width: 32rem;
+    height: auto;
+    max-height: 16rem;
+    margin: 0 auto;
+    object-fit: contain;
+  }
+
+  @include media-breakpoint-up(lg) {
+    @include make-col(6);
+    margin-bottom: 0;
+
+    img { max-height: none; }
+  }
+}
+
+.kc-card {
+  @include make-col-ready();
+  max-width: 34rem;
+
+  @include media-breakpoint-up(lg) {
+    @include make-col(5);
+    max-width: none;
+
+    .kc-hero + & { @include make-col-offset(1); }
+  }
+}
+
+.kc-page-header {
+  margin-bottom: 1.75rem;
+}
+
+.kc-title {
+  display: flex;
+  align-items: flex-end;
+  gap: .6rem;
+  margin: 0;
+  padding-bottom: .2rem;
+  border-bottom: 1px solid $kc-muted;
+  color: $kc-ink;
+  font-size: 1.75rem;
+  font-weight: $font-weight-light;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.kc-title__icon {
+  margin-bottom: .2rem;
+  color: $kc-accent;
+  font-size: 1.6rem;
+}
+
+.kc-title__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.kc-required-hint {
+  margin: .75rem 0 0;
+  color: $kc-muted;
+  font-size: .875rem;
+}
+
+// --- Footer -----------------------------------------------------------------
+.kc-footer {
+  flex-shrink: 0;
+  padding: .5rem 0;
+  background: $kc-surface;
+  color: $kc-muted;
+
+  strong {
+    color: $kc-ink;
+    font-weight: $font-weight-bold;
+  }
+}

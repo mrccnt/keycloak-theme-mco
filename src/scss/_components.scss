@@ -1,0 +1,286 @@
+// Keycloak-specific components
+
+// --- Messages ---------------------------------------------------------------
+.kc-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  margin-bottom: 1.25rem;
+  padding: .7rem 1rem;
+  border-left: 3px solid $kc-muted;
+  background: rgba($kc-muted, .07);
+  font-weight: $font-weight-normal;
+
+  > .bi {
+    margin-top: .2em;
+    font-size: 1.1rem;
+  }
+}
+
+@each $type, $color in ("error": $kc-danger, "warning": $kc-accent, "success": $kc-success, "info": $kc-muted) {
+  .alert-#{$type} {
+    border-left-color: $color;
+    background: rgba($color, .08);
+
+    > .bi { color: $color; }
+  }
+}
+
+// --- Signed-in user ---------------------------------------------------------
+.kc-username {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: 1rem;
+  padding: .45rem .75rem;
+  border: 1px solid $kc-light;
+  border-radius: $border-radius;
+  background: $kc-surface;
+  color: $kc-muted;
+
+  label {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    color: $kc-dark;
+    font-weight: $font-weight-normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+.kc-username__reset {
+  color: $kc-muted;
+  line-height: 1;
+
+  &:hover { color: $kc-accent; }
+}
+
+#try-another-way {
+  display: inline-block;
+  margin-top: 1rem;
+  color: $kc-muted;
+
+  &:hover { color: $kc-accent; }
+}
+
+// --- Registration / info ----------------------------------------------------
+.kc-info {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid $kc-light;
+  color: $kc-muted;
+
+  a {
+    color: $kc-dark;
+    font-weight: $font-weight-semibold;
+
+    &:hover { color: $kc-accent; }
+  }
+}
+
+#kc-info-message p,
+.instruction {
+  color: $kc-dark;
+}
+
+// --- Identity Provider -------------------------------------------------------
+.kc-social {
+  margin-top: 2rem;
+
+  hr { display: none; }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: $kc-muted;
+    font-size: .8125rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      border-top: 1px solid $kc-light;
+    }
+  }
+}
+
+.kc-social__list {
+  display: grid;
+  gap: .5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kc-social__list--grid {
+  @include media-breakpoint-up(sm) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kc-social__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  width: 100%;
+  letter-spacing: .12em;
+}
+
+.kc-social__icon {
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+// --- Authenticator selection ------------------------------------------------
+.kc-select-auth {
+  display: grid;
+  gap: .75rem;
+}
+
+.kc-select-auth__item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid $kc-light;
+  border-radius: $border-radius;
+  background: #fff;
+  color: inherit;
+  text-align: start;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    outline: 0;
+    border-color: $kc-accent;
+    box-shadow: 0 0 0 .2rem rgba($kc-accent, .2);
+  }
+}
+
+.kc-select-auth__icon {
+  color: $kc-accent;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.kc-select-auth__body { flex: 1; }
+.kc-select-auth__fill { display: none; }
+
+.kc-select-auth__heading {
+  color: $kc-ink;
+  font-weight: $font-weight-semibold;
+}
+
+.kc-select-auth__desc {
+  color: $kc-muted;
+  font-size: .9rem;
+}
+
+.kc-select-auth__arrow { color: $kc-muted; }
+
+// --- OTP device selection -----------------------------------------------------
+.kc-otp-tile__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kc-otp-tile {
+  display: inline-flex;
+  margin: 0 .5rem .5rem 0;
+  padding: .75rem 1.25rem;
+  border: 1px solid $kc-light;
+  border-radius: $border-radius;
+  cursor: pointer;
+
+  .kc-otp-tile__input:checked + & {
+    border-color: $kc-accent;
+    box-shadow: inset 0 0 0 1px $kc-accent;
+  }
+
+  .kc-otp-tile__input:focus-visible + & {
+    box-shadow: 0 0 0 .2rem rgba($kc-accent, .35);
+  }
+}
+
+.kc-otp-tile__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+}
+
+.kc-otp-tile__icon {
+  color: $kc-accent;
+  font-size: 1.5rem;
+}
+
+.kc-otp-tile__title { font-weight: $font-weight-normal; }
+
+// --- TOTP setup ---------------------------------------------------------------
+#kc-totp-settings {
+  padding-left: 1.25rem;
+
+  li { margin-bottom: .75rem; }
+
+  img {
+    max-width: 12rem;
+    border: 1px solid $kc-light;
+  }
+}
+
+#kc-totp-supported-apps {
+  margin: .25rem 0 0;
+  padding-left: 1.25rem;
+}
+
+#kc-totp-secret-key {
+  font-family: $font-family-monospace;
+  font-weight: $font-weight-normal;
+  overflow-wrap: anywhere;
+}
+
+// --- Recovery Codes -----------------------------------------------------------
+.kc-recovery-codes-warning {
+  margin-bottom: 1rem;
+}
+
+.kc-recovery-codes-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .25rem 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  list-style: none;
+  border: 1px solid $kc-light;
+  background: $kc-surface;
+  font-family: $font-family-monospace;
+}
+
+.kc-recovery-codes-actions {
+  display: flex;
+  gap: .25rem;
+  margin-bottom: 1rem;
+
+  button {
+    @extend .btn;
+    @extend .btn-secondary;
+  }
+}
+
+// --- WebAuthn -------------------------------------------------------------------
+#kc-webauthn-authenticator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid $kc-light;
+  border-radius: $border-radius;
+}

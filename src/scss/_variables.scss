@@ -1,0 +1,81 @@
+// Color palette
+$kc-light:  #DCDFE8;
+$kc-dark:   #35384D;
+$kc-muted:  #616583;
+$kc-accent: #F69D4C;
+$kc-ink:    #203040;
+$kc-surface: #F7F8FA;  // navbar/footer background (from screenshots)
+
+$kc-danger:  #C0392B;
+$kc-success: #2E7D5B;
+
+// Bootstrap-Overrides
+$primary:   $kc-dark;
+$secondary: $kc-muted;
+$danger:    $kc-danger;
+$success:   $kc-success;
+$warning:   $kc-accent;
+$info:      $kc-muted;
+$light:     $kc-surface;
+$dark:      $kc-ink;
+// no generated color variants (btn-outline-* etc.) – see _buttons.scss for buttons
+$theme-colors: ();
+
+$enable-dark-mode:        false;
+$enable-shadows:          false;
+$enable-negative-margins: false;
+$enable-smooth-scroll:    false;
+
+$font-family-sans-serif: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-weight-light:  300;
+$font-weight-normal: 400;
+$font-weight-semibold: 600;
+$font-weight-bold:   700;
+$font-weight-base:   $font-weight-light;
+$line-height-base:   1.6;
+
+$body-color: $kc-dark;
+$body-bg:    #fff;
+$border-color: $kc-light;
+
+$headings-color:       $kc-ink;
+$headings-font-weight: $font-weight-light;
+
+$link-color:            $kc-dark;
+$link-decoration:       none;
+$link-hover-color:      $kc-accent;
+$link-hover-decoration: none;
+
+$border-radius:    .375rem;
+$focus-ring-color: rgba($kc-accent, .25);
+$focus-ring-width: .2rem;
+
+// Forms (styled like the contact form)
+$input-padding-y:           .45rem;
+$input-padding-x:           .75rem;
+$input-font-weight:         $font-weight-normal;
+$input-color:               $kc-dark;
+$input-border-color:        $kc-light;
+$input-focus-border-color:  $kc-accent;
+$input-focus-box-shadow:    0 0 0 .2rem rgba($kc-accent, .2);
+$input-placeholder-color:   rgba($kc-muted, .7);
+$input-disabled-bg:         $kc-surface;
+$form-label-margin-bottom:  .35rem;
+$form-label-font-weight:    $font-weight-light;
+$form-label-color:          $kc-dark;
+$form-text-color:           $kc-muted;
+$form-select-indicator-color: $kc-dark;
+$form-check-input-border:   1px solid $kc-muted;
+$form-check-input-checked-bg-color:     $kc-dark;
+$form-check-input-checked-border-color: $kc-dark;
+$form-check-input-focus-border: $kc-accent;
+
+// Buttons: square, letter-spaced, bold
+$btn-border-radius:    0;
+$btn-border-radius-sm: 0;
+$btn-border-radius-lg: 0;
+$btn-font-weight:      $font-weight-bold;
+$btn-font-size:        .8125rem;
+$btn-padding-y:        .5rem;
+$btn-padding-x:        1rem;
+$btn-focus-box-shadow: 0 0 0 .2rem rgba($kc-accent, .35);
