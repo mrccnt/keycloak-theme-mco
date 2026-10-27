@@ -16,7 +16,7 @@ To build and package the theme using `make`, you will need the following toolcha
 
 ```sh
 make            # -> dist/keycloak-theme-mco-1.0.0.jar
-make theme      # only build build/theme/kc-auth/
+make theme      # only build build/theme/keycloak-theme-mco/
 make dev        # Keycloak 26.1.4 via Docker Compose with the theme mounted (http://localhost:8080, admin/admin)
 make watch      # recompile SCSS on change
 make lint       # FreeMarker syntax check of all .ftl templates
@@ -27,7 +27,18 @@ make distclean  # additionally delete node_modules/ and .cache/
 ## Installation
 
 Copy the JAR to `/opt/keycloak/providers/` (in production run `kc.sh build` afterwards),
-then select `kc-auth` in the admin console under *Realm settings → Themes → Login theme*.
+then select `keycloak-theme-mco` in the admin console under *Realm settings → Themes → Login theme*.
+
+## Release
+
+Pushing a version tag triggers `.github/workflows/release.yml`: it runs `make lint` (the workflow
+stops on any template error), builds the JAR with the version taken from the tag and publishes it
+as a GitHub release with generated notes.
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0    # -> release v1.0.0 with keycloak-theme-mco-1.0.0.jar
+```
 
 ## Development
 
@@ -39,7 +50,7 @@ Keycloak in the foreground with `docker compose up`. The container
 - uses `quay.io/keycloak/keycloak:26.1.4` (override with `make dev KC_VERSION=<version>`),
 - runs `start-dev` with an in-container H2 database – all data is lost on `docker compose down`,
 - creates the admin user `admin` / `admin`,
-- mounts `build/theme/kc-auth` read-only to `/opt/keycloak/themes/kc-auth`,
+- mounts `build/theme/keycloak-theme-mco` read-only to `/opt/keycloak/themes/keycloak-theme-mco`,
 - disables theme, template and static resource caching, so changes under `build/theme/` are
   served on the next page load without restarting.
 
@@ -47,7 +58,7 @@ First run:
 
 1. `make dev` and wait for `Keycloak 26.1.4 ... started`.
 2. Open the admin console at <http://localhost:8080/admin> and log in with `admin` / `admin`.
-3. *Realm settings → Themes → Login theme* → `kc-auth` → *Save*
+3. *Realm settings → Themes → Login theme* → `keycloak-theme-mco` → *Save*
    (for a test realm of your own, do the same there).
 4. Open <http://localhost:8080/realms/master/account> in a private window to see the login page.
    To test other pages (registration, forgot password, OTP, …), enable the corresponding options
@@ -58,7 +69,7 @@ Stop with `Ctrl+C`; `docker compose down` removes the container (and its data).
 ### `make watch`
 
 Runs Sass in watch mode: every change below `src/scss/` recompiles
-`build/theme/kc-auth/login/resources/css/login.css`, which the running container picks up directly.
+`build/theme/keycloak-theme-mco/login/resources/css/login.css`, which the running container picks up directly.
 It only handles SCSS. Recommended workflow with two terminals:
 
 ```sh
@@ -85,14 +96,14 @@ templates, so runtime errors (missing variables, wrong types) only show up in Ke
 
 ## Structure
 
-| Path                                       | Content                                                                         |
-|--------------------------------------------|---------------------------------------------------------------------------------|
-| `src/theme/kc-auth/login/template.ftl`     | Page skeleton: navbar, image + form, footer                                     |
-| `src/theme/kc-auth/login/theme.properties` | Class mapping of the base templates, page image and title icon per page         |
-| `src/theme/kc-auth/login/messages/`        | Additional texts (de, en; other languages fall back to en)                      |
-| `src/scss/`                                | Styles; `_bootstrap.scss` lists the included Bootstrap parts                    |
-| `tools/FtlLint.java`                       | FreeMarker syntax checker used by `make lint`                                   |
-| `Makefile`                                 | `ICONS` = the single list of shipped Bootstrap Icons, font weights/subsets      |
+| Path                                                  | Content                                                                    |
+|-------------------------------------------------------|----------------------------------------------------------------------------|
+| `src/theme/keycloak-theme-mco/login/template.ftl`     | Page skeleton: navbar, image + form, footer                                |
+| `src/theme/keycloak-theme-mco/login/theme.properties` | Class mapping of the base templates, page image and title icon per page    |
+| `src/theme/keycloak-theme-mco/login/messages/`        | Additional texts (de, en; other languages fall back to en)                 |
+| `src/scss/`                                           | Styles; `_bootstrap.scss` lists the included Bootstrap parts               |
+| `tools/FtlLint.java`                                  | FreeMarker syntax checker used by `make lint`                              |
+| `Makefile`                                            | `ICONS` = the single list of shipped Bootstrap Icons, font weights/subsets |
 
 Page image/icon per page: `heroImage-<template>` or `pageIcon-<template>` in `theme.properties`
 (`<template>` = file name without `.ftl`, e.g. `login-otp`).

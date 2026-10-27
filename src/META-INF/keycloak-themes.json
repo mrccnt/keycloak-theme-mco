@@ -1,7 +1,7 @@
 {
   "themes": [
     {
-      "name": "kc-auth",
+      "name": "keycloak-theme-mco",
       "types": ["login"]
     }
   ]

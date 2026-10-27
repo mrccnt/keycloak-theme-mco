@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/kc-auth.iml" filepath="$PROJECT_DIR$/kc-auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/keycloak-theme-mco.iml" filepath="$PROJECT_DIR$/keycloak-theme-mco.iml" />
     </modules>
   </component>
 </project>

@@ -1,4 +1,4 @@
-# keycloak-theme-mco: Keycloak login theme "kc-auth" (Keycloak >= 26.1.4)
+# keycloak-theme-mco: Keycloak login theme (Keycloak >= 26.1.4)
 #
 #   make            -> dist/keycloak-theme-mco-<version>.jar (copy to /opt/keycloak/providers/)
 #   make theme      -> unpacked theme under build/theme/ (for Docker mount / development)
@@ -9,8 +9,8 @@
 #   make distclean  -> additionally delete node_modules/ and the download cache
 
 PACKAGE      := keycloak-theme-mco
-THEME        := kc-auth
-VERSION      := 1.0.0
+THEME        := $(PACKAGE)
+VERSION      ?= 1.0.0
 KC_VERSION   := 26.1.4
 
 # Source Sans Pro is downloaded from Fontsource and self-hosted in the theme

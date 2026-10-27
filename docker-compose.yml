@@ -16,4 +16,4 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./build/theme/kc-auth:/opt/keycloak/themes/kc-auth:ro
+      - ./build/theme/keycloak-theme-mco:/opt/keycloak/themes/keycloak-theme-mco:ro
