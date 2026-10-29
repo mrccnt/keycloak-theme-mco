@@ -74,61 +74,31 @@
     <header id="kc-header" class="kc-navbar">
         <div class="kc-navbar__inner">
             <a class="kc-brand" href="${appUrl?has_content?then(appUrl, '#')}">
-<#--                <img class="kc-brand__logo" src="${url.resourcesPath}/img/logo.png" alt="" width="32" height="32">-->
-                <span id="kc-header-wrapper" class="kc-brand__name"><#if realm.displayNameHtml?has_content>${kcSanitize(msg("loginTitleHtml",(realm.displayNameHtml!'')))?no_esc}<#else>${realm.displayName!realm.name}</#if></span>
+                <img class="kc-brand__logo" src="${url.resourcesPath}/img/logo.png" alt="" width="32" height="32">
             </a>
-
-            <#if appUrl?has_content || showLocales>
+            <#if showLocales>
                 <nav class="kc-nav" aria-label="${msg("kcAuthNavigation")}">
-                    <#if appUrl?has_content>
-                        <a class="kc-nav__link" href="${appUrl}">${msg("kcAuthBackToApplication")}</a>
-                    </#if>
-                    <#if showLocales>
-                        <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
-                            <div id="kc-locale-wrapper" class="${properties.kcLocaleWrapperClass!}">
-                                <div id="kc-locale-dropdown" class="menu-button-links ${properties.kcLocaleDropDownClass!}">
-                                    <button tabindex="1" id="kc-current-locale-link" class="kc-nav__link kc-dropdown__toggle" aria-label="${msg("kcAuthLanguages")}" aria-haspopup="true" aria-expanded="false" aria-controls="language-switch1">
-                                        <i class="bi bi-globe" aria-hidden="true"></i>
-                                        <span>${locale.current}</span>
-                                        <i class="bi bi-chevron-down kc-dropdown__caret" aria-hidden="true"></i>
-                                    </button>
-                                    <ul role="menu" tabindex="-1" aria-labelledby="kc-current-locale-link" aria-activedescendant="" id="language-switch1" class="${properties.kcLocaleListClass!}">
-                                        <#assign i = 1>
-                                        <#list locale.supported as l>
-                                            <li class="${properties.kcLocaleListItemClass!}" role="none">
-                                                <a role="menuitem" id="language-${i}" class="${properties.kcLocaleItemClass!}<#if l.label == locale.current> is-active</#if>" href="${l.url}">${l.label}</a>
-                                            </li>
-                                            <#assign i++>
-                                        </#list>
-                                    </ul>
-                                </div>
+                    <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
+                        <div id="kc-locale-wrapper" class="${properties.kcLocaleWrapperClass!}">
+                            <div id="kc-locale-dropdown" class="menu-button-links ${properties.kcLocaleDropDownClass!}">
+                                <button tabindex="1" id="kc-current-locale-link" class="kc-nav__link kc-dropdown__toggle" aria-label="${msg("kcAuthLanguages")}" aria-haspopup="true" aria-expanded="false" aria-controls="language-switch1">
+                                    <i class="bi bi-globe" aria-hidden="true"></i>
+                                    <span>${locale.current}</span>
+                                    <i class="bi bi-chevron-down kc-dropdown__caret" aria-hidden="true"></i>
+                                </button>
+                                <ul role="menu" tabindex="-1" aria-labelledby="kc-current-locale-link" aria-activedescendant="" id="language-switch1" class="${properties.kcLocaleListClass!}">
+                                    <#assign i = 1>
+                                    <#list locale.supported as l>
+                                        <li class="${properties.kcLocaleListItemClass!}" role="none">
+                                            <a role="menuitem" id="language-${i}" class="${properties.kcLocaleItemClass!}<#if l.label == locale.current> is-active</#if>" href="${l.url}">${l.label}</a>
+                                        </li>
+                                        <#assign i++>
+                                    </#list>
+                                </ul>
                             </div>
                         </div>
-                    </#if>
+                    </div>
                 </nav>
-
-                <#-- Mobile: all navigation items behind the burger menu -->
-                <div id="kc-nav-mobile" class="menu-button-links kc-dropdown kc-nav-mobile">
-                    <button id="kc-nav-toggle" class="kc-nav-toggle" aria-label="${msg("kcAuthMenu")}" aria-haspopup="true" aria-expanded="false" aria-controls="kc-nav-mobile-menu">
-                        <i class="bi bi-list" aria-hidden="true"></i>
-                    </button>
-                    <ul role="menu" tabindex="-1" aria-labelledby="kc-nav-toggle" aria-activedescendant="" id="kc-nav-mobile-menu" class="${properties.kcLocaleListClass!}">
-                        <#if appUrl?has_content>
-                            <li class="${properties.kcLocaleListItemClass!}" role="none">
-                                <a role="menuitem" id="kc-nav-mobile-app" class="${properties.kcLocaleItemClass!}" href="${appUrl}">${msg("kcAuthBackToApplication")}</a>
-                            </li>
-                        </#if>
-                        <#if showLocales>
-                            <#assign i = 1>
-                            <#list locale.supported as l>
-                                <li class="${properties.kcLocaleListItemClass!}" role="none">
-                                    <a role="menuitem" id="kc-nav-mobile-language-${i}" class="${properties.kcLocaleItemClass!}<#if l.label == locale.current> is-active</#if>" href="${l.url}">${l.label}</a>
-                                </li>
-                                <#assign i++>
-                            </#list>
-                        </#if>
-                    </ul>
-                </div>
             </#if>
         </div>
     </header>
@@ -198,6 +168,7 @@
                                     <div id="kc-info-wrapper" class="${properties.kcInfoAreaWrapperClass!}">
                                         <#nested "info">
                                     </div>
+                                    <img class="kc-info__logo" src="${url.resourcesPath}/img/logo.png" alt="" width="48" height="48">
                                 </div>
                             </#if>
                         </div>

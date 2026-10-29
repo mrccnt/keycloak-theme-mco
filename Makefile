@@ -1,10 +1,14 @@
 # keycloak-theme-mco: Keycloak login theme (Keycloak >= 26.1.4)
 #
 #   make            -> dist/keycloak-theme-mco-<version>.jar (copy to /opt/keycloak/providers/)
+#                      plus checksums, SBOMs and reports
 #   make theme      -> unpacked theme under build/theme/ (for Docker mount / development)
 #   make dev        -> start Keycloak 26.1.4 via Docker Compose with the theme mounted
 #   make watch      -> recompile SCSS on change
-#   make lint       -> FreeMarker syntax check of all .ftl templates
+#   make checksums  -> MD5/SHA-256 files of the JAR (dist/*.jar.md5, dist/*.jar.sha256)
+#   make sbom       -> SBOMs of the JAR (dist/*.cdx.json CycloneDX, dist/*.spdx.json SPDX)
+#   make report     -> reports under build/reports/ (npm audit, licenses, JAR contents)
+#   make lint       -> FreeMarker syntax check of all .ftl templates (+ build/reports/ftl-lint.txt)
 #   make clean      -> delete build/ and dist/
 #   make distclean  -> additionally delete node_modules/ and the download cache
 
@@ -24,7 +28,7 @@ FONT_SUBSETS := latin latin-ext cyrillic cyrillic-ext greek
 ICONS := \
 	arrow-counterclockwise arrow-right box-arrow-in-right box-arrow-left check-circle \
 	chevron-down chevron-right envelope exclamation-circle exclamation-triangle eye eye-slash \
-	fingerprint globe info-circle key list list-check person person-plus phone qr-code \
+	fingerprint globe info-circle key list-check person person-plus phone qr-code \
 	shield-check shield-lock usb-drive bluetooth wifi \
 	facebook github gitlab google instagram linkedin microsoft paypal stack-overflow twitter-x
 
@@ -39,6 +43,10 @@ THEME_OUT := $(BUILD)/theme/$(THEME)
 RES_OUT   := $(THEME_OUT)/login/resources
 GEN       := $(BUILD)/gen
 JAR       := $(DIST)/$(PACKAGE)-$(VERSION).jar
+CHECKSUMS := $(JAR).md5 $(JAR).sha256
+SBOM_CDX  := $(DIST)/$(PACKAGE)-$(VERSION).cdx.json
+SBOM_SPDX := $(DIST)/$(PACKAGE)-$(VERSION).spdx.json
+REPORTS   := $(BUILD)/reports
 
 SASS      := $(NODE)/.bin/sass
 SASS_OPTS := --no-source-map --style=compressed --quiet-deps \
@@ -60,9 +68,9 @@ FTL_FILES  := $(shell find $(THEME_SRC) -name '*.ftl')
 
 .PRECIOUS: $(CACHE)/fonts/%.woff2
 
-.PHONY: all theme deps fonts icons images css jar lint dev watch clean distclean
+.PHONY: all theme deps fonts icons images css jar checksums sbom report lint dev watch clean distclean
 
-all: jar
+all: jar checksums sbom report
 
 theme: $(BUILD)/.theme-copied fonts icons images css
 
@@ -73,6 +81,9 @@ icons: $(ICON_FILES)
 images: $(IMG_FILES)
 css: $(CSS_FILE)
 jar: $(JAR)
+checksums: $(CHECKSUMS)
+sbom: $(SBOM_CDX) $(SBOM_SPDX)
+report: $(REPORTS)/npm-audit.json $(REPORTS)/npm-audit.txt $(REPORTS)/licenses.txt $(REPORTS)/jar-contents.txt
 
 $(NODE)/.installed: package.json
 	npm install --no-audit --no-fund
@@ -133,13 +144,50 @@ $(JAR): theme $(SRC)/META-INF/keycloak-themes.json
 	cd $(BUILD) && zip -qr ../$@ META-INF theme
 	@echo "-> $@"
 
+# --- Checksums (relative file name, so `md5sum -c` / `sha256sum -c` work in dist/) ---
+$(JAR).md5: $(JAR)
+	cd $(DIST) && md5sum $(notdir $<) > $(notdir $@)
+
+$(JAR).sha256: $(JAR)
+	cd $(DIST) && sha256sum $(notdir $<) > $(notdir $@)
+
+# --- SBOM (npm sbom from package-lock.json, enriched with JAR hashes and the font) ---
+$(BUILD)/npm-sbom.%.json: package-lock.json
+	@mkdir -p $(@D)
+	npm sbom --package-lock-only --sbom-format $* --sbom-type application > $@
+
+$(SBOM_CDX): $(BUILD)/npm-sbom.cyclonedx.json $(JAR) tools/sbom.mjs
+	node tools/sbom.mjs cyclonedx $< $(JAR) $(PACKAGE) $(VERSION) $(FONT_FAMILY) $(FONT_VERSION) > $@
+
+$(SBOM_SPDX): $(BUILD)/npm-sbom.spdx.json $(JAR) tools/sbom.mjs
+	node tools/sbom.mjs spdx $< $(JAR) $(PACKAGE) $(VERSION) $(FONT_FAMILY) $(FONT_VERSION) > $@
+
+# --- Reports (informational, they do not fail the build) ---------------------
+$(REPORTS)/npm-audit.json: package-lock.json
+	@mkdir -p $(@D)
+	npm audit --json > $@ || true
+
+$(REPORTS)/npm-audit.txt: package-lock.json
+	@mkdir -p $(@D)
+	npm audit > $@ || true
+
+$(REPORTS)/licenses.txt: $(SBOM_CDX) tools/sbom.mjs
+	@mkdir -p $(@D)
+	node tools/sbom.mjs licenses $< > $@
+
+$(REPORTS)/jar-contents.txt: $(JAR)
+	@mkdir -p $(@D)
+	unzip -l $< > $@
+
 # --- Lint --------------------------------------------------------------------
 $(FREEMARKER_JAR):
 	@mkdir -p $(@D)
 	curl -fsSL -o $@ $(FREEMARKER_URL)
 
 lint: $(FREEMARKER_JAR)
-	java -cp $(FREEMARKER_JAR) tools/FtlLint.java $(FTL_FILES)
+	@mkdir -p $(REPORTS)
+	java -cp $(FREEMARKER_JAR) tools/FtlLint.java $(FTL_FILES) > $(REPORTS)/ftl-lint.txt 2>&1; \
+		rc=$$?; cat $(REPORTS)/ftl-lint.txt; exit $$rc
 
 # --- Development -------------------------------------------------------------
 dev: theme

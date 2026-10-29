@@ -63,13 +63,9 @@
 }
 
 .kc-nav {
-  display: none;
-
-  @include media-breakpoint-up(md) {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .kc-nav__link {
@@ -87,30 +83,6 @@
   &:hover,
   &[aria-expanded="true"] {
     color: $kc-accent;
-  }
-}
-
-.kc-nav-mobile {
-  @include media-breakpoint-up(md) {
-    display: none;
-  }
-}
-
-.kc-nav-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: .3rem .7rem;
-  border: 1px solid rgba($kc-dark, .15);
-  border-radius: $border-radius;
-  background: transparent;
-  color: $kc-muted;
-  font-size: 1.6rem;
-  line-height: 1;
-
-  &:focus-visible {
-    outline: 0;
-    box-shadow: 0 0 0 .2rem rgba($kc-accent, .35);
   }
 }
 

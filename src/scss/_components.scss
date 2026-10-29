@@ -78,6 +78,13 @@
   }
 }
 
+.kc-info__logo {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  margin: 1.5rem auto 0;
+}
+
 #kc-info-message p,
 .instruction {
   color: $kc-dark;

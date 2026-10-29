@@ -1,3 +1,7 @@
+[![Release](https://img.shields.io/github/release/mrccnt/keycloak-theme-mco.svg)](https://github.com/mrccnt/keycloak-theme-mco/releases/latest)
+[![License](https://img.shields.io/github/license/mrccnt/keycloak-theme-mco)](/LICENSE)
+[![release](https://github.com/mrccnt/keycloak-theme-mco/actions/workflows/release.yml/badge.svg)](https://github.com/mrccnt/keycloak-theme-mco/actions/workflows/release.yml)
+
 # keycloak-theme-mco
 
 Keycloak login theme for Keycloak **26.1.4** and later (`parent=base`, no PatternFly).
@@ -10,15 +14,19 @@ To build and package the theme using `make`, you will need the following toolcha
 * `npm`
 * `curl`
 * ImageMagick (`convert`)
-* `zip`
+* `zip`, `unzip`
+* `md5sum`, `sha256sum` (coreutils)
 * docker + docker compose (for `make dev`)
 * java 11+ (for `make lint`)
 
 ```sh
-make            # -> dist/keycloak-theme-mco-1.0.0.jar
+make            # -> dist/keycloak-theme-mco-1.0.0.jar + checksums, SBOMs, reports
 make theme      # only build build/theme/keycloak-theme-mco/
 make dev        # Keycloak 26.1.4 via Docker Compose with the theme mounted (http://localhost:8080, admin/admin)
 make watch      # recompile SCSS on change
+make checksums  # dist/*.jar.md5, dist/*.jar.sha256
+make sbom       # dist/*.cdx.json (CycloneDX), dist/*.spdx.json (SPDX)
+make report     # build/reports/: npm audit, licenses, JAR contents
 make lint       # FreeMarker syntax check of all .ftl templates
 make clean      # delete build/ and dist/
 make distclean  # additionally delete node_modules/ and .cache/
@@ -33,7 +41,8 @@ then select `keycloak-theme-mco` in the admin console under *Realm settings → 
 
 Pushing a version tag triggers `.github/workflows/release.yml`: it runs `make lint` (the workflow
 stops on any template error), builds the JAR with the version taken from the tag and publishes it
-as a GitHub release with generated notes.
+together with its checksums and SBOMs as a GitHub release with generated notes. The reports under
+`build/reports/` are attached to the workflow run as the `reports` artifact.
 
 ```sh
 git tag v1.0.0
@@ -94,6 +103,28 @@ The FreeMarker JAR is downloaded from Maven Central into `.cache/` on first use.
 It reports syntax errors as `file:line:column: message` and exits non-zero; it does not render the
 templates, so runtime errors (missing variables, wrong types) only show up in Keycloak itself.
 
+## Build artifacts
+
+`make` writes the following files:
+
+| File                                       | Content                                                              |
+|--------------------------------------------|----------------------------------------------------------------------|
+| `dist/keycloak-theme-mco-<v>.jar`          | The theme                                                            |
+| `dist/keycloak-theme-mco-<v>.jar.md5`      | MD5 checksum (`md5sum -c` in `dist/`)                                |
+| `dist/keycloak-theme-mco-<v>.jar.sha256`   | SHA-256 checksum (`sha256sum -c` in `dist/`)                         |
+| `dist/keycloak-theme-mco-<v>.cdx.json`     | SBOM, CycloneDX 1.5                                                  |
+| `dist/keycloak-theme-mco-<v>.spdx.json`    | SBOM, SPDX 2.3                                                       |
+| `build/reports/npm-audit.json`, `.txt`     | `npm audit` of the build dependencies (informational, never fails)  |
+| `build/reports/licenses.txt`               | Licenses of all components, split into *shipped* and *build only*    |
+| `build/reports/jar-contents.txt`           | File listing of the JAR                                              |
+| `build/reports/ftl-lint.txt`               | Output of `make lint`                                                |
+
+The SBOMs start from `npm sbom` (based on `package-lock.json`) and are completed by `tools/sbom.mjs`:
+the root component is the JAR (build version, license, MD5/SHA-256), `bootstrap` and
+`bootstrap-icons` are marked as shipped (compiled CSS, icon SVGs), and the self-hosted
+Source Sans Pro font from Fontsource is added. All other npm packages are build-only dependencies.
+If a new npm package ends up in the JAR, add it to `SHIPPED` in `tools/sbom.mjs`.
+
 ## Structure
 
 | Path                                                  | Content                                                                    |
@@ -103,6 +134,7 @@ templates, so runtime errors (missing variables, wrong types) only show up in Ke
 | `src/theme/keycloak-theme-mco/login/messages/`        | Additional texts (de, en; other languages fall back to en)                 |
 | `src/scss/`                                           | Styles; `_bootstrap.scss` lists the included Bootstrap parts               |
 | `tools/FtlLint.java`                                  | FreeMarker syntax checker used by `make lint`                              |
+| `tools/sbom.mjs`                                      | Completes the `npm sbom` output to an SBOM of the JAR, license report      |
 | `Makefile`                                            | `ICONS` = the single list of shipped Bootstrap Icons, font weights/subsets |
 
 Page image/icon per page: `heroImage-<template>` or `pageIcon-<template>` in `theme.properties`
@@ -133,3 +165,7 @@ so it takes the current text color).
 
 To remove an icon, delete it from `ICONS` and run `make clean theme`, so the old SVG is not
 left behind in `build/`.
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE). The IP2Location LITE data is subject to IP2Location's own terms, see [Attribution and database license](#attribution-and-database-license).
