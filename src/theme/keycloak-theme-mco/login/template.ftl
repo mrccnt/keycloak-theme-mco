@@ -3,6 +3,7 @@
 <#assign kcPage = (.main_template_name!"")?remove_ending(".ftl")>
 <#assign heroImage = properties["heroImage-" + kcPage]!properties.heroImage!"">
 <#assign pageIcon = properties["pageIcon-" + kcPage]!properties.pageIcon!"shield-lock">
+<#assign clientLogo = (client.attributes.logoUri)!"">
 <#assign showLocales = realm.internationalizationEnabled && locale.supported?size gt 1>
 <#assign appUrl = (client.baseUrl)!"">
 <!DOCTYPE html>
@@ -115,7 +116,11 @@
                 <div class="${properties.kcFormCardClass!}">
                     <header class="${properties.kcFormHeaderClass!}">
                         <h1 id="kc-page-title" class="kc-title">
-                            <i class="bi bi-${pageIcon} kc-title__icon" aria-hidden="true"></i>
+                            <#if clientLogo?has_content>
+                                <img class="kc-title__icon kc-title__icon--logo" src="${clientLogo}" alt="">
+                            <#else>
+                                <i class="bi bi-${pageIcon} kc-title__icon" aria-hidden="true"></i>
+                            </#if>
                             <span class="kc-title__text"><#nested "header"></span>
                         </h1>
 

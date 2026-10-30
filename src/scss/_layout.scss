@@ -196,7 +196,7 @@
 
 .kc-title {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: .6rem;
   margin: 0;
   padding-bottom: .2rem;
@@ -208,10 +208,18 @@
   text-transform: uppercase;
 }
 
+// Icon left of the text, as tall as one text line (1em × line-height)
 .kc-title__icon {
-  margin-bottom: .2rem;
+  width: 1.15em;
+  height: 1.15em;
   color: $kc-accent;
-  font-size: 1.6rem;
+}
+
+// Client logo (logoUri): keep the aspect ratio within the line height
+.kc-title__icon--logo {
+  width: auto;
+  max-width: 3em;
+  object-fit: contain;
 }
 
 .kc-title__text {
