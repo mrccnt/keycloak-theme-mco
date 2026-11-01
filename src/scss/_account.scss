@@ -1,0 +1,163 @@
+// Account console (account/index.ftl) – builds on the login layout, forms and buttons
+
+// --- Navbar: collapsible menu below md ----------------------------------------
+.kc-app .kc-navbar__inner {
+  flex-wrap: wrap;
+}
+
+.kc-navbar__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .3rem .6rem;
+  border: 1px solid $kc-light;
+  border-radius: $border-radius;
+  background: transparent;
+  color: $kc-dark;
+  font-size: 1.5rem;
+  line-height: 1;
+
+  &:hover,
+  &[aria-expanded="true"] {
+    color: $kc-accent;
+  }
+
+  &:focus-visible {
+    outline: 0;
+    box-shadow: $btn-focus-box-shadow;
+  }
+
+  @include media-breakpoint-up(md) {
+    display: none;
+  }
+}
+
+.kc-nav--collapse {
+  @include media-breakpoint-down(md) {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: .25rem .5rem .5rem;
+
+    &.is-open { display: flex; }
+
+    .kc-nav__link { padding: .5rem 0; }
+
+    .kc-dropdown__menu {
+      position: static;
+      margin-top: .25rem;
+      box-shadow: none;
+    }
+  }
+}
+
+// Locale entries are buttons (the user's locale is saved via the Account REST API)
+button.kc-dropdown__link {
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: start;
+}
+
+// --- Content ------------------------------------------------------------------
+.kc-account-alert:empty {
+  display: none;
+}
+
+.kc-account-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: 4rem 0;
+  color: $kc-muted;
+}
+
+.kc-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid $kc-light;
+  border-top-color: $kc-accent;
+  border-radius: 50%;
+  animation: kc-spin .8s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 3s;
+  }
+}
+
+@keyframes kc-spin {
+  to { transform: rotate(360deg); }
+}
+
+// Subtitle below a page title (home, logout)
+.kc-subtitle {
+  margin: .75rem 0 0;
+  color: $kc-muted;
+  font-size: 1rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+// Section titles of the profile page: accent line
+.kc-title--accent {
+  border-bottom-color: $kc-accent;
+}
+
+.kc-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+
+  .bi {
+    font-size: 1rem;
+  }
+}
+
+// --- Profile page: two columns from lg ------------------------------------------
+.kc-account-grid {
+  display: grid;
+  gap: 3rem;
+  align-items: start;
+
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem 6rem;
+  }
+}
+
+.kc-account-section {
+  min-width: 0;
+}
+
+// Card with body and grey footer for the buttons
+.kc-panel {
+  border: 1px solid $kc-light;
+  border-radius: $border-radius;
+  background: #fff;
+}
+
+.kc-panel__body {
+  padding: 1rem 1rem 1.5rem;
+
+  > :last-child { margin-bottom: 0; }
+
+  .kc-required-hint { margin: 0 0 .75rem; }
+}
+
+.kc-panel__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem;
+  padding: .5rem 1rem;
+  border-top: 1px solid $kc-light;
+  border-radius: 0 0 $border-radius $border-radius;
+  background: $kc-surface;
+}
+
+// "Change email" below the read-only email field
+.kc-field-action {
+  margin-top: .5rem;
+}

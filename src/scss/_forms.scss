@@ -21,6 +21,17 @@ textarea.form-control {
   min-height: 8rem;
 }
 
+// Read-only values (e.g. username when it may not be changed)
+.form-control[readonly] {
+  background-color: $input-disabled-bg;
+  color: $kc-muted;
+
+  &:focus {
+    border-color: $input-border-color;
+    box-shadow: none;
+  }
+}
+
 .form-control[aria-invalid="true"] {
   border-color: $kc-danger;
 

@@ -6,6 +6,8 @@
 <#assign clientLogo = (client.attributes.logoUri)!"">
 <#assign showLocales = realm.internationalizationEnabled && locale.supported?size gt 1>
 <#assign appUrl = (client.baseUrl)!"">
+<#-- /resources/<version>/login/<theme> -> /resources/<version>/common/keycloak-theme-mco -->
+<#assign sharedPath = url.resourcesPath?keep_before_last("/login/") + "/" + properties.sharedResources>
 <!DOCTYPE html>
 <html class="${properties.kcHtmlClass!}" lang="${lang}"<#if realm.internationalizationEnabled> dir="${(locale.rtl)?then('rtl','ltr')}"</#if>>
 
@@ -20,12 +22,17 @@
         </#list>
     </#if>
     <title>${msg("loginTitle",(realm.displayName!''))}</title>
-    <link rel="icon" href="${url.resourcesPath}/img/favicon.ico" />
-    <link rel="preload" href="${url.resourcesPath}/fonts/source-sans-pro-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="${url.resourcesPath}/fonts/source-sans-pro-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="icon" href="${sharedPath}/img/favicon.ico" />
+    <link rel="preload" href="${sharedPath}/fonts/source-sans-pro-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="${sharedPath}/fonts/source-sans-pro-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
     <#if properties.stylesCommon?has_content>
         <#list properties.stylesCommon?split(' ') as style>
             <link href="${url.resourcesCommonPath}/${style}" rel="stylesheet" />
+        </#list>
+    </#if>
+    <#if properties.sharedStyles?has_content>
+        <#list properties.sharedStyles?split(' ') as style>
+            <link href="${sharedPath}/${style}" rel="stylesheet" />
         </#list>
     </#if>
     <#if properties.styles?has_content>
@@ -75,7 +82,7 @@
     <header id="kc-header" class="kc-navbar">
         <div class="kc-navbar__inner">
             <a class="kc-brand" href="${appUrl?has_content?then(appUrl, '#')}">
-                <img class="kc-brand__logo" src="${url.resourcesPath}/img/logo.png" alt="" width="32" height="32">
+                <img class="kc-brand__logo" src="${sharedPath}/img/logo.png" alt="" width="32" height="32">
             </a>
             <#if showLocales>
                 <nav class="kc-nav" aria-label="${msg("kcAuthNavigation")}">
@@ -109,7 +116,7 @@
             <div class="kc-layout">
                 <#if heroImage?has_content>
                     <div class="kc-hero" aria-hidden="true">
-                        <img src="${url.resourcesPath}/${heroImage}" alt="" width="800" height="800">
+                        <img src="${sharedPath}/${heroImage}" alt="" width="800" height="800">
                     </div>
                 </#if>
 
@@ -173,7 +180,7 @@
                                     <div id="kc-info-wrapper" class="${properties.kcInfoAreaWrapperClass!}">
                                         <#nested "info">
                                     </div>
-                                    <img class="kc-info__logo" src="${url.resourcesPath}/img/logo.png" alt="" width="48" height="48">
+                                    <img class="kc-info__logo" src="${sharedPath}/img/logo.png" alt="" width="48" height="48">
                                 </div>
                             </#if>
                         </div>

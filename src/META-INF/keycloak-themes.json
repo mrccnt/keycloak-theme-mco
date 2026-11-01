@@ -2,7 +2,7 @@
   "themes": [
     {
       "name": "keycloak-theme-mco",
-      "types": ["login"]
+      "types": ["login", "account", "common"]
     }
   ]
 }

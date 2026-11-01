@@ -1,6 +1,7 @@
-// Page skeleton: navbar, content (image + form), footer
+// Page skeleton: navbar, content (image + form), footer – shared by login (.kc-login) and account (.kc-app)
 
-.kc-login {
+.kc-login,
+.kc-app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -81,6 +82,7 @@
   text-transform: uppercase;
 
   &:hover,
+  &.is-active,
   &[aria-expanded="true"] {
     color: $kc-accent;
   }

@@ -4,7 +4,15 @@
 
 # keycloak-theme-mco
 
-Keycloak login theme for Keycloak **26.1.4** and later (`parent=base`, no PatternFly).
+Keycloak login **and account** theme for Keycloak **26.1.4** and later (no PatternFly).
+
+One JAR provides one theme, `keycloak-theme-mco`, with three theme types:
+
+| Type      | Content                                                                                       |
+|-----------|-----------------------------------------------------------------------------------------------|
+| `login`   | FreeMarker login pages (`parent=base`)                                                        |
+| `account` | Account console in the same look: home, profile + password, logout confirmation               |
+| `common`  | Resources shared by both: CSS, fonts, images, icons, JS – a single stylesheet for both themes |
 
 ## Requirements
 
@@ -35,7 +43,8 @@ make distclean  # additionally delete node_modules/ and .cache/
 ## Installation
 
 Copy the JAR to `/opt/keycloak/providers/` (in production run `kc.sh build` afterwards),
-then select `keycloak-theme-mco` in the admin console under *Realm settings → Themes → Login theme*.
+then select `keycloak-theme-mco` in the admin console under *Realm settings → Themes* as
+**Login theme** and/or **Account theme**.
 
 ## Release
 
@@ -67,9 +76,10 @@ First run:
 
 1. `make dev` and wait for `Keycloak 26.1.4 ... started`.
 2. Open the admin console at <http://localhost:8080/admin> and log in with `admin` / `admin`.
-3. *Realm settings → Themes → Login theme* → `keycloak-theme-mco` → *Save*
+3. *Realm settings → Themes → Login theme* and *Account theme* → `keycloak-theme-mco` → *Save*
    (for a test realm of your own, do the same there).
-4. Open <http://localhost:8080/realms/master/account> in a private window to see the login page.
+4. Open <http://localhost:8080/realms/master/account> in a private window to see the login page,
+   after signing in the account console.
    To test other pages (registration, forgot password, OTP, …), enable the corresponding options
    under *Realm settings → Login* or *Authentication*.
 
@@ -78,7 +88,7 @@ Stop with `Ctrl+C`; `docker compose down` removes the container (and its data).
 ### `make watch`
 
 Runs Sass in watch mode: every change below `src/scss/` recompiles
-`build/theme/keycloak-theme-mco/login/resources/css/login.css`, which the running container picks up directly.
+`build/theme/keycloak-theme-mco/common/resources/css/theme.css`, which the running container picks up directly.
 It only handles SCSS. Recommended workflow with two terminals:
 
 ```sh
@@ -87,8 +97,8 @@ make watch      # terminal 2: SCSS
 ```
 
 - **SCSS** (`src/scss/`): saved → compiled by `make watch` → reload the browser.
-- **Templates, `theme.properties`, messages** (`src/theme/`): not watched – run `make theme`,
-  then reload the browser.
+- **Templates, `theme.properties`, messages** (`src/theme/`) and **JS** (`src/js/`): not watched –
+  run `make theme`, then reload the browser.
 - **`ICONS` in the Makefile**: run `make theme` (copies the SVGs and regenerates the icon classes);
   restart `make watch` so it compiles against the new icon list.
 - After `make clean` the mounted directory is gone: run `make theme` and restart `make dev`.
@@ -132,7 +142,12 @@ If a new npm package ends up in the JAR, add it to `SHIPPED` in `tools/sbom.mjs`
 | `src/theme/keycloak-theme-mco/login/template.ftl`     | Page skeleton: navbar, image + form, footer                                |
 | `src/theme/keycloak-theme-mco/login/theme.properties` | Class mapping of the base templates, page image and title icon per page    |
 | `src/theme/keycloak-theme-mco/login/messages/`        | Additional texts (de, en; other languages fall back to en)                 |
-| `src/scss/`                                           | Styles; `_bootstrap.scss` lists the included Bootstrap parts               |
+| `src/theme/keycloak-theme-mco/account/index.ftl`      | Account console page: navbar, home, profile + password, logout, footer     |
+| `src/theme/keycloak-theme-mco/account/theme.properties` | `parent=keycloak.v3` (messages), page images                             |
+| `src/theme/keycloak-theme-mco/account/messages/`      | Texts of the account console (de, en)                                      |
+| `src/scss/`                                           | One stylesheet for both themes (`theme.scss`); `_bootstrap.scss` lists the included Bootstrap parts, `_account.scss` the account-only parts |
+| `src/js/account.js`                                   | Account console logic (sign-in, Account REST API), no dependencies         |
+| `src/META-INF/keycloak-themes.json`                   | Registers the types `login`, `account`, `common`                           |
 | `tools/FtlLint.java`                                  | FreeMarker syntax checker used by `make lint`                              |
 | `tools/sbom.mjs`                                      | Completes the `npm sbom` output to an SBOM of the JAR, license report      |
 | `Makefile`                                            | `ICONS` = the single list of shipped Bootstrap Icons, font weights/subsets |
@@ -140,10 +155,42 @@ If a new npm package ends up in the JAR, add it to `SHIPPED` in `tools/sbom.mjs`
 Page image/icon per page: `heroImage-<template>` or `pageIcon-<template>` in `theme.properties`
 (`<template>` = file name without `.ftl`, e.g. `login-otp`).
 
+Everything generated by `make` (CSS, fonts, images, icons, JS) goes to
+`common/resources/`; both templates link it via the `sharedResources` property
+(`/resources/<version>/common/keycloak-theme-mco/…`).
+
+## Account console
+
+Keycloak 26 only ships the React account console (`keycloak.v3`); the old FreeMarker account pages
+no longer exist. The account theme therefore uses `keycloak.v3` as parent (for its messages and the
+server-side route) and replaces its `index.ftl` with a page built from the same layout, forms and
+buttons as the login theme:
+
+| Route        | Content                                                                                   |
+|--------------|-------------------------------------------------------------------------------------------|
+| `#/`         | Hero image, greeting, button to the profile                                               |
+| `#/profile`  | Profile form generated from the realm's user profile (attributes, groups, validators, select options, helper texts), language selection; password card |
+| `#/logout`   | Logout confirmation (*Sign out* / *Cancel*)                                               |
+
+`src/js/account.js`:
+
+- signs in against the built-in public client `account-console` (authorization code + PKCE; with the
+  login's SSO session this is a silent redirect). Tokens are kept in memory only, `sessionStorage`
+  holds just the PKCE state during the redirect;
+- reads and saves the user through the Account REST API (`/realms/<realm>/account/`), showing
+  validation errors below the fields;
+- *Change password* (and *Change email*, if the `UPDATE_EMAIL` action is enabled) start the
+  corresponding Keycloak required action (`kc_action`) on the login theme and return to the
+  profile with a confirmation;
+- the language menu stores the user's `locale` attribute and reloads the page;
+- *Sign out* ends the session via the OIDC logout endpoint (no extra Keycloak confirmation).
+
+Old console links (`/account/personal-info`, `/account/account-security/…`) open the profile.
+
 ## Adding icons
 
 Only the Bootstrap Icons listed in `ICONS` in the `Makefile` are shipped. Each one is copied as
-`login/resources/img/icons/<name>.svg` and gets a CSS class `bi-<name>` (rendered as a CSS mask,
+`common/resources/img/icons/<name>.svg` and gets a CSS class `bi-<name>` (rendered as a CSS mask,
 so it takes the current text color).
 
 1. Find the icon name:
@@ -165,7 +212,3 @@ so it takes the current text color).
 
 To remove an icon, delete it from `ICONS` and run `make clean theme`, so the old SVG is not
 left behind in `build/`.
-
-## License
-
-Apache License 2.0, see [LICENSE](LICENSE). The IP2Location LITE data is subject to IP2Location's own terms, see [Attribution and database license](#attribution-and-database-license).

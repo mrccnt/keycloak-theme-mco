@@ -1,4 +1,9 @@
-# keycloak-theme-mco: Keycloak login theme (Keycloak >= 26.1.4)
+# keycloak-theme-mco: Keycloak login + account theme (Keycloak >= 26.1.4)
+#
+# One JAR, one theme name, three theme types:
+#   login/   - FreeMarker login pages
+#   account/ - account console (replaces the React console of keycloak.v3)
+#   common/  - shared resources of both (CSS, fonts, images, icons, JS)
 #
 #   make            -> dist/keycloak-theme-mco-<version>.jar (copy to /opt/keycloak/providers/)
 #                      plus checksums, SBOMs and reports
@@ -28,7 +33,7 @@ FONT_SUBSETS := latin latin-ext cyrillic cyrillic-ext greek
 ICONS := \
 	arrow-counterclockwise arrow-right box-arrow-in-right box-arrow-left check-circle \
 	chevron-down chevron-right envelope exclamation-circle exclamation-triangle eye eye-slash \
-	fingerprint globe info-circle key list-check person person-plus phone qr-code \
+	fingerprint globe info-circle key list list-check person person-plus phone qr-code \
 	shield-check shield-lock usb-drive bluetooth wifi \
 	facebook github gitlab google instagram linkedin microsoft paypal stack-overflow twitter-x
 
@@ -40,7 +45,7 @@ NODE      := node_modules
 
 THEME_SRC := $(SRC)/theme/$(THEME)
 THEME_OUT := $(BUILD)/theme/$(THEME)
-RES_OUT   := $(THEME_OUT)/login/resources
+RES_OUT   := $(THEME_OUT)/common/resources
 GEN       := $(BUILD)/gen
 JAR       := $(DIST)/$(PACKAGE)-$(VERSION).jar
 CHECKSUMS := $(JAR).md5 $(JAR).sha256
@@ -63,16 +68,18 @@ IMG_FILES  := $(RES_OUT)/img/logo.png $(RES_OUT)/img/favicon.ico \
               $(RES_OUT)/img/image_1.webp $(RES_OUT)/img/image_2.webp
 SCSS_FILES := $(shell find $(SRC)/scss -name '*.scss')
 TPL_FILES  := $(shell find $(THEME_SRC) -type f)
-CSS_FILE   := $(RES_OUT)/css/login.css
+CSS_FILE   := $(RES_OUT)/css/theme.css
+JS_SRC     := $(shell find $(SRC)/js -name '*.js')
+JS_FILES   := $(JS_SRC:$(SRC)/js/%=$(RES_OUT)/js/%)
 FTL_FILES  := $(shell find $(THEME_SRC) -name '*.ftl')
 
 .PRECIOUS: $(CACHE)/fonts/%.woff2
 
-.PHONY: all theme deps fonts icons images css jar checksums sbom report lint dev watch clean distclean
+.PHONY: all theme deps fonts icons images css js jar checksums sbom report lint dev watch clean distclean
 
 all: jar checksums sbom report
 
-theme: $(BUILD)/.theme-copied fonts icons images css
+theme: $(BUILD)/.theme-copied fonts icons images css js
 
 deps: $(NODE)/.installed
 
@@ -80,6 +87,7 @@ fonts: $(FONT_FILES)
 icons: $(ICON_FILES)
 images: $(IMG_FILES)
 css: $(CSS_FILE)
+js: $(JS_FILES)
 jar: $(JAR)
 checksums: $(CHECKSUMS)
 sbom: $(SBOM_CDX) $(SBOM_SPDX)
@@ -134,7 +142,12 @@ $(RES_OUT)/img/%.webp: resources/%.png
 # --- CSS ---------------------------------------------------------------------
 $(CSS_FILE): $(SCSS_FILES) $(GEN)/_icons.scss $(NODE)/.installed
 	@mkdir -p $(@D)
-	$(SASS) $(SASS_OPTS) $(SRC)/scss/login.scss $@
+	$(SASS) $(SASS_OPTS) $(SRC)/scss/theme.scss $@
+
+# --- JS (account console) ----------------------------------------------------
+$(RES_OUT)/js/%.js: $(SRC)/js/%.js
+	@mkdir -p $(@D)
+	cp $< $@
 
 # --- JAR ---------------------------------------------------------------------
 $(JAR): theme $(SRC)/META-INF/keycloak-themes.json
@@ -194,7 +207,7 @@ dev: theme
 	KC_VERSION=$(KC_VERSION) docker compose up
 
 watch: deps $(GEN)/_icons.scss
-	$(SASS) $(SASS_OPTS) --watch $(SRC)/scss/login.scss:$(CSS_FILE)
+	$(SASS) $(SASS_OPTS) --watch $(SRC)/scss/theme.scss:$(CSS_FILE)
 
 clean:
 	rm -rf $(BUILD) $(DIST)

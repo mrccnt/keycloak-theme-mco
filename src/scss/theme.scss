@@ -1,4 +1,4 @@
-// keycloak-theme-mco – Keycloak login theme
+// keycloak-theme-mco – one stylesheet for the login and the account theme
 @import "variables";
 @import "bootstrap";
 @import "fonts";
@@ -7,3 +7,4 @@
 @import "forms";
 @import "buttons";
 @import "components";
+@import "account";
